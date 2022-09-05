@@ -12,9 +12,9 @@ public class HelloController {
 
     @GetMapping("/hello")
     public ModelAndView hello() {
-        ModelAndView modelAndView = new ModelAndView("hello");
-        modelAndView.addObject("nome", "Lionel Messi");
-        return modelAndView;
+        ModelAndView mv = new ModelAndView("hello");
+        mv.addObject("nome", "Lionel Messi");
+        return mv;
     }
 
     @GetMapping("/hello-model")

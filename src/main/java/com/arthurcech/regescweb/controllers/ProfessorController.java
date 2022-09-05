@@ -30,37 +30,34 @@ public class ProfessorController {
     @GetMapping
     public ModelAndView index() {
         List<Professor> professores = professorRepository.findAll();
-
-        ModelAndView modelAndView = new ModelAndView("professores/index");
-        modelAndView.addObject("professores", professores);
-
-        return modelAndView;
+        ModelAndView mv = new ModelAndView("professores/index");
+        mv.addObject("professores", professores);
+        return mv;
     }
 
     @GetMapping("/new")
     public ModelAndView nnew(RequisicaoFormProfessor requisicaoFormProfessor) {
         ModelAndView modelAndView = new ModelAndView("professores/new");
         modelAndView.addObject("listaStatusProfessor", StatusProfessor.values());
-
         return modelAndView;
     }
 
     /*
         Por que não utilizar a classe da entidade como parâmetro?
-        - Web Parameter Tampering: o usuário pode passar um atributo sensível, como salário, na requisição. Para evitar
-        isso, utilizamos o padrão DTO (Data Transfer Object)
+        - Web Parameter Tampering: o usuário pode passar um atributo sensível, como salário, na requisição.
+        - O usuário cria um input nas ferramentas de desenvolvedor do navegador
+        - Para evitar isso, utilizamos o padrão DTO (Data Transfer Object)
      */
     @PostMapping
     public ModelAndView create(@Valid RequisicaoFormProfessor requisicaoFormProfessor, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             ModelAndView mv = new ModelAndView("professores/new");
+            mv.addObject("requisicaoFormProfessor", requisicaoFormProfessor);
             mv.addObject("listaStatusProfessor", StatusProfessor.values());
-
             return mv;
         } else {
             Professor professor = requisicaoFormProfessor.toProfessor();
             professorRepository.save(professor);
-
             return new ModelAndView("redirect:/professores/" + professor.getId());
         }
     }
@@ -68,12 +65,10 @@ public class ProfessorController {
     @GetMapping("/{id}")
     public ModelAndView show(@PathVariable("id") Long id) {
         Optional<Professor> optionalProfessor = professorRepository.findById(id);
-
         if (optionalProfessor.isPresent()) {
-            ModelAndView modelAndView = new ModelAndView("professores/show");
-            modelAndView.addObject("professor", optionalProfessor.get());
-
-            return modelAndView;
+            ModelAndView mv = new ModelAndView("professores/show");
+            mv.addObject("professor", optionalProfessor.get());
+            return mv;
         } else {
             return retornaErroProfessor("SHOW ERROR: Professor #" + id + " não encontrado!");
         }
@@ -82,16 +77,12 @@ public class ProfessorController {
     @GetMapping("/{id}/edit")
     public ModelAndView edit(@PathVariable("id") Long id, RequisicaoFormProfessor requisicaoFormProfessor) {
         Optional<Professor> optionalProfessor = professorRepository.findById(id);
-
         if (optionalProfessor.isPresent()) {
             Professor professor = optionalProfessor.get();
-
             requisicaoFormProfessor.fromProfessor(professor);
-
             ModelAndView mv = new ModelAndView("professores/edit");
             mv.addObject("listaStatusProfessor", StatusProfessor.values());
             mv.addObject("professorId", professor.getId());
-
             return mv;
         } else {
             return retornaErroProfessor("EDIT ERROR: Professor #" + id + " não encontrado!");
@@ -104,15 +95,12 @@ public class ProfessorController {
         if (bindingResult.hasErrors()) {
             ModelAndView mv = new ModelAndView("professores/edit");
             mv.addObject("listaStatusProfessor", StatusProfessor.values());
-
             return mv;
         } else {
             Optional<Professor> optionalProfessor = professorRepository.findById(id);
-
             if (optionalProfessor.isPresent()) {
                 Professor professor = requisicaoFormProfessor.toProfessor(optionalProfessor.get());
                 professorRepository.save(professor);
-
                 return new ModelAndView("redirect:/professores/" + professor.getId());
             } else {
                 return retornaErroProfessor("UPDATE ERROR: Professor #" + id + " não encontrado!");
@@ -123,7 +111,6 @@ public class ProfessorController {
     @GetMapping("/{id}/delete")
     public ModelAndView delete(@PathVariable("id") Long id) {
         ModelAndView mv = new ModelAndView("redirect:/professores");
-
         try {
             professorRepository.deleteById(id);
             mv.addObject("mensagem", "Professor #" + id + " deletado com sucesso!");
@@ -131,7 +118,6 @@ public class ProfessorController {
         } catch (EmptyResultDataAccessException e) {
             mv = retornaErroProfessor("DELETE ERROR: Professor #" + id + " não encontrado!");
         }
-
         return mv;
     }
 
