@@ -54,6 +54,7 @@ public class ProfessorController {
         if (bindingResult.hasErrors()) {
             ModelAndView mv = new ModelAndView("professores/new");
             mv.addObject("listaStatusProfessor", StatusProfessor.values());
+
             return mv;
         } else {
             Professor professor = requisicaoFormProfessor.toProfessor();
@@ -70,6 +71,7 @@ public class ProfessorController {
         if (optionalProfessor.isPresent()) {
             ModelAndView modelAndView = new ModelAndView("professores/show");
             modelAndView.addObject("professor", optionalProfessor.get());
+
             return modelAndView;
         } else {
             return new ModelAndView("redirect:/professores");
@@ -82,14 +84,38 @@ public class ProfessorController {
 
         if (optionalProfessor.isPresent()) {
             Professor professor = optionalProfessor.get();
+
             requisicaoFormProfessor.fromProfessor(professor);
 
             ModelAndView mv = new ModelAndView("professores/edit");
             mv.addObject("listaStatusProfessor", StatusProfessor.values());
             mv.addObject("professorId", professor.getId());
+
             return mv;
         } else {
             return new ModelAndView("redirect:/professores");
+        }
+    }
+
+    @PostMapping("/{id}")
+    public ModelAndView update(@PathVariable("id") Long id, @Valid RequisicaoFormProfessor requisicaoFormProfessor,
+                               BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            ModelAndView mv = new ModelAndView("professores/edit");
+            mv.addObject("listaStatusProfessor", StatusProfessor.values());
+
+            return mv;
+        } else {
+            Optional<Professor> optionalProfessor = professorRepository.findById(id);
+
+            if (optionalProfessor.isPresent()) {
+                Professor professor = requisicaoFormProfessor.toProfessor(optionalProfessor.get());
+                professorRepository.save(professor);
+
+                return new ModelAndView("redirect:/professores/" + professor.getId());
+            } else {
+                return new ModelAndView("redirect:/professores");
+            }
         }
     }
 
