@@ -4,6 +4,7 @@ import com.arthurcech.regescweb.dto.RequisicaoFormProfessor;
 import com.arthurcech.regescweb.models.Professor;
 import com.arthurcech.regescweb.models.StatusProfessor;
 import com.arthurcech.regescweb.repositories.ProfessorRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -116,6 +117,18 @@ public class ProfessorController {
             } else {
                 return new ModelAndView("redirect:/professores");
             }
+        }
+    }
+
+    @GetMapping("/{id}/delete")
+    public ModelAndView delete(@PathVariable("id") Long id) {
+        try {
+            professorRepository.deleteById(id);
+            ModelAndView mv = new ModelAndView("redirect:/professores");
+            return mv;
+        } catch (EmptyResultDataAccessException e) {
+            ModelAndView mv = new ModelAndView("redirect:/professores");
+            return mv;
         }
     }
 
