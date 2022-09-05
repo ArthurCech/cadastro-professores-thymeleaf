@@ -5,10 +5,13 @@ import com.arthurcech.regescweb.models.Professor;
 import com.arthurcech.regescweb.models.StatusProfessor;
 import com.arthurcech.regescweb.repositories.ProfessorRepository;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -30,10 +33,10 @@ public class ProfessorController {
         return modelAndView;
     }
 
-    @GetMapping("/professor/new")
+    @GetMapping("/professores/new")
     public ModelAndView nnew() {
         ModelAndView modelAndView = new ModelAndView("professores/new");
-        modelAndView.addObject("statusProfessor", StatusProfessor.values());
+        modelAndView.addObject("listaStatusProfessor", StatusProfessor.values());
 
         return modelAndView;
     }
@@ -44,11 +47,22 @@ public class ProfessorController {
         isso, utilizamos o padrão DTO (Data Transfer Object)
      */
     @PostMapping("/professores")
-    public String create(RequisicaoNovoProfessor requisicaoNovoProfessor) {
+    public ModelAndView create(@Valid RequisicaoNovoProfessor requisicaoNovoProfessor, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            ModelAndView mv = new ModelAndView("/professores/new");
+            mv.addObject("listaStatusProfessor", StatusProfessor.values());
+            return mv;
+        }
+
         Professor professor = requisicaoNovoProfessor.toProfessor();
         professorRepository.save(professor);
 
-        return "redirect:/professores";
+        return new ModelAndView("redirect:/professores");
+    }
+
+    @ModelAttribute(value = "requisicaoNovoProfessor")
+    public RequisicaoNovoProfessor getRequisicaoNovoProfessor() {
+        return new RequisicaoNovoProfessor();
     }
 
 }

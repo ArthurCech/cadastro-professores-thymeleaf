@@ -3,11 +3,17 @@ package com.arthurcech.regescweb.dto;
 import com.arthurcech.regescweb.models.Professor;
 import com.arthurcech.regescweb.models.StatusProfessor;
 
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public class RequisicaoNovoProfessor {
 
+    @NotBlank
     private String nome;
+    @NotNull
+    @DecimalMin("0.0")
     private BigDecimal salario;
     private StatusProfessor statusProfessor;
 
