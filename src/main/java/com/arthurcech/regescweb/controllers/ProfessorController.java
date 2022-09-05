@@ -34,11 +34,12 @@ public class ProfessorController {
     public ModelAndView nnew() {
         ModelAndView modelAndView = new ModelAndView("professores/new");
         modelAndView.addObject("statusProfessor", StatusProfessor.values());
+
         return modelAndView;
     }
 
     /*
-        Por que não utilizar a classe final (entidade) como parâmetro?
+        Por que não utilizar a classe da entidade como parâmetro?
         - Web Parameter Tampering: o usuário pode passar um atributo sensível, como salário, na requisição. Para evitar
         isso, utilizamos o padrão DTO (Data Transfer Object)
      */
@@ -46,6 +47,7 @@ public class ProfessorController {
     public String create(RequisicaoNovoProfessor requisicaoNovoProfessor) {
         Professor professor = requisicaoNovoProfessor.toProfessor();
         professorRepository.save(professor);
+
         return "redirect:/professores";
     }
 

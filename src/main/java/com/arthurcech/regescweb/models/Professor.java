@@ -15,15 +15,13 @@ public class Professor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false)
     private String nome;
-
     private BigDecimal salario;
-
     @Enumerated(EnumType.STRING)
     private StatusProfessor statusProfessor;
 
+    @Deprecated
     public Professor() {
     }
 
