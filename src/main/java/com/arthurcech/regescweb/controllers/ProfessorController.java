@@ -75,7 +75,7 @@ public class ProfessorController {
 
             return modelAndView;
         } else {
-            return new ModelAndView("redirect:/professores");
+            return retornaErroProfessor("SHOW ERROR: Professor #" + id + " não encontrado!");
         }
     }
 
@@ -94,7 +94,7 @@ public class ProfessorController {
 
             return mv;
         } else {
-            return new ModelAndView("redirect:/professores");
+            return retornaErroProfessor("EDIT ERROR: Professor #" + id + " não encontrado!");
         }
     }
 
@@ -115,21 +115,31 @@ public class ProfessorController {
 
                 return new ModelAndView("redirect:/professores/" + professor.getId());
             } else {
-                return new ModelAndView("redirect:/professores");
+                return retornaErroProfessor("UPDATE ERROR: Professor #" + id + " não encontrado!");
             }
         }
     }
 
     @GetMapping("/{id}/delete")
     public ModelAndView delete(@PathVariable("id") Long id) {
+        ModelAndView mv = new ModelAndView("redirect:/professores");
+
         try {
             professorRepository.deleteById(id);
-            ModelAndView mv = new ModelAndView("redirect:/professores");
-            return mv;
+            mv.addObject("mensagem", "Professor #" + id + " deletado com sucesso!");
+            mv.addObject("erro", false);
         } catch (EmptyResultDataAccessException e) {
-            ModelAndView mv = new ModelAndView("redirect:/professores");
-            return mv;
+            mv = retornaErroProfessor("DELETE ERROR: Professor #" + id + " não encontrado!");
         }
+
+        return mv;
+    }
+
+    private ModelAndView retornaErroProfessor(String msg) {
+        ModelAndView mv = new ModelAndView("redirect:/professores");
+        mv.addObject("mensagem", msg);
+        mv.addObject("erro", true);
+        return mv;
     }
 
 }
