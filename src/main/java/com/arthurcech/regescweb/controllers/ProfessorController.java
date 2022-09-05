@@ -7,11 +7,13 @@ import com.arthurcech.regescweb.repositories.ProfessorRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class ProfessorController {
@@ -55,6 +57,19 @@ public class ProfessorController {
             Professor professor = requisicaoNovoProfessor.toProfessor();
             professorRepository.save(professor);
 
+            return new ModelAndView("redirect:/professores/" + professor.getId());
+        }
+    }
+
+    @GetMapping("/professores/{id}")
+    public ModelAndView show(@PathVariable("id") Long id) {
+        Optional<Professor> optionalProfessor = professorRepository.findById(id);
+
+        if (optionalProfessor.isPresent()) {
+            ModelAndView modelAndView = new ModelAndView("professores/show");
+            modelAndView.addObject("professor", optionalProfessor.get());
+            return modelAndView;
+        } else {
             return new ModelAndView("redirect:/professores");
         }
     }
