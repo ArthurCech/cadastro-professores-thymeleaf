@@ -1,6 +1,6 @@
 package com.arthurcech.regescweb.controllers;
 
-import com.arthurcech.regescweb.dto.RequisicaoFormProfessor;
+import com.arthurcech.regescweb.dto.ProfessorDTO;
 import com.arthurcech.regescweb.models.Professor;
 import com.arthurcech.regescweb.models.StatusProfessor;
 import com.arthurcech.regescweb.repositories.ProfessorRepository;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,14 +29,14 @@ public class ProfessorController {
 
     @GetMapping
     public ModelAndView index() {
-        List<Professor> professores = professorRepository.findAll();
+        List<Professor> list = professorRepository.findAll();
         ModelAndView mv = new ModelAndView("professores/index");
-        mv.addObject("professores", professores);
+        mv.addObject("professores", list);
         return mv;
     }
 
     @GetMapping("/new")
-    public ModelAndView nnew(RequisicaoFormProfessor requisicaoFormProfessor) {
+    public ModelAndView nnew(ProfessorDTO professorDTO) {
         ModelAndView modelAndView = new ModelAndView("professores/new");
         modelAndView.addObject("listaStatusProfessor", StatusProfessor.values());
         return modelAndView;
@@ -44,21 +44,24 @@ public class ProfessorController {
 
     /*
         Por que não utilizar a classe da entidade como parâmetro?
-        - Web Parameter Tampering: o usuário pode passar um atributo sensível, como salário, na requisição.
-        - O usuário cria um input nas ferramentas de desenvolvedor do navegador
-        - Para evitar isso, utilizamos o padrão DTO (Data Transfer Object)
+        - Web Parameter Tampering: o usuário pode passar um atributo sensível
+        - O usuário cria um input nas ferramentas de desenvolvedor do navegador e passa um novo atributo
      */
     @PostMapping
-    public ModelAndView create(@Valid RequisicaoFormProfessor requisicaoFormProfessor, BindingResult bindingResult) {
+    public ModelAndView create(
+            @Valid ProfessorDTO professorDTO,
+            BindingResult bindingResult
+    ) {
         if (bindingResult.hasErrors()) {
             ModelAndView mv = new ModelAndView("professores/new");
-            mv.addObject("requisicaoFormProfessor", requisicaoFormProfessor);
+            mv.addObject("professorDTO", professorDTO);
             mv.addObject("listaStatusProfessor", StatusProfessor.values());
             return mv;
         } else {
-            Professor professor = requisicaoFormProfessor.toProfessor();
+            Professor professor = professorDTO.toProfessor();
             professorRepository.save(professor);
-            return new ModelAndView("redirect:/professores/" + professor.getId());
+//            return new ModelAndView("redirect:/professores/" + professor.getId());
+            return new ModelAndView("redirect:/professores");
         }
     }
 
@@ -75,11 +78,11 @@ public class ProfessorController {
     }
 
     @GetMapping("/{id}/edit")
-    public ModelAndView edit(@PathVariable("id") Long id, RequisicaoFormProfessor requisicaoFormProfessor) {
+    public ModelAndView edit(@PathVariable("id") Long id, ProfessorDTO professorDTO) {
         Optional<Professor> optionalProfessor = professorRepository.findById(id);
         if (optionalProfessor.isPresent()) {
             Professor professor = optionalProfessor.get();
-            requisicaoFormProfessor.fromProfessor(professor);
+            professorDTO.fromProfessor(professor);
             ModelAndView mv = new ModelAndView("professores/edit");
             mv.addObject("listaStatusProfessor", StatusProfessor.values());
             mv.addObject("professorId", professor.getId());
@@ -90,7 +93,7 @@ public class ProfessorController {
     }
 
     @PostMapping("/{id}")
-    public ModelAndView update(@PathVariable("id") Long id, @Valid RequisicaoFormProfessor requisicaoFormProfessor,
+    public ModelAndView update(@PathVariable("id") Long id, @Valid ProfessorDTO professorDTO,
                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             ModelAndView mv = new ModelAndView("professores/edit");
@@ -99,7 +102,7 @@ public class ProfessorController {
         } else {
             Optional<Professor> optionalProfessor = professorRepository.findById(id);
             if (optionalProfessor.isPresent()) {
-                Professor professor = requisicaoFormProfessor.toProfessor(optionalProfessor.get());
+                Professor professor = professorDTO.toProfessor(optionalProfessor.get());
                 professorRepository.save(professor);
                 return new ModelAndView("redirect:/professores/" + professor.getId());
             } else {
