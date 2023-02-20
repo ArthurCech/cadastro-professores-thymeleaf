@@ -3,9 +3,9 @@ package com.arthurcech.regescweb.dto;
 import com.arthurcech.regescweb.models.Professor;
 import com.arthurcech.regescweb.models.StatusProfessor;
 
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public class RequisicaoFormProfessor {
