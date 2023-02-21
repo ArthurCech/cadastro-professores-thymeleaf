@@ -60,8 +60,7 @@ public class ProfessorController {
         } else {
             Professor professor = professorDTO.toProfessor();
             professorRepository.save(professor);
-//            return new ModelAndView("redirect:/professores/" + professor.getId());
-            return new ModelAndView("redirect:/professores");
+            return new ModelAndView("redirect:/professores/" + professor.getId());
         }
     }
 
@@ -93,10 +92,14 @@ public class ProfessorController {
     }
 
     @PostMapping("/{id}")
-    public ModelAndView update(@PathVariable("id") Long id, @Valid ProfessorDTO professorDTO,
-                               BindingResult bindingResult) {
+    public ModelAndView update(
+            @PathVariable("id") Long id,
+            @Valid ProfessorDTO professorDTO,
+            BindingResult bindingResult
+    ) {
         if (bindingResult.hasErrors()) {
             ModelAndView mv = new ModelAndView("professores/edit");
+            mv.addObject("professorDTO", professorDTO);
             mv.addObject("listaStatusProfessor", StatusProfessor.values());
             return mv;
         } else {

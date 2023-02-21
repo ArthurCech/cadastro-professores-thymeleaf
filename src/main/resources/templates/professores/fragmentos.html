@@ -1,8 +1,9 @@
-<!-- fragment form professor new and edit -->
-<div class="container" th:fragment="form(requisicaoFormProfessor, action)">
+<!-- fragment form professor -->
+<div class="container" th:fragment="form(professorDTO, action)">
     <div class="row">
-        <form th:object="${requisicaoFormProfessor}"
-              th:action="${action}" method="POST">
+        <form th:object="${professorDTO}"
+              th:action="${action}"
+              method="POST">
             <div class="mb-3">
                 <label class="form-label">Nome</label>
                 <input class="form-control" th:errorclass="is-invalid" type="text" th:field="*{nome}">
@@ -16,10 +17,15 @@
             <div class="mb-3">
                 <label class="form-label">Status</label>
                 <select class="form-select" th:field="*{statusProfessor}">
-                    <!--<option th:each="status : ${T(com.arthurcech.regescweb.models.StatusProfessor).values()}"
-                            th:value="${status}" th:text="${status}"></option>-->
+                    <!--<option
+                            th:each="status : ${T(com.arthurcech.regescweb.models.StatusProfessor).values()}"
+                            th:value="${status}"
+                            th:text="${status}">
+                    </option>-->
                     <option th:each="status : ${listaStatusProfessor}"
-                            th:value="${status}" th:text="${status}"></option>
+                            th:value="${status}"
+                            th:text="${status}">
+                    </option>
                 </select>
             </div>
             <button class="btn btn-primary" type="submit">Submeter</button>
